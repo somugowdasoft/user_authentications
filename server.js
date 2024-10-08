@@ -7,6 +7,9 @@ const connectDB = require("./config/db");
 //import userRoute
 const userRoutes = require("./routes/userRoutes");
 
+// Load environment variables from .env file
+require("dotenv").config();
+
 const app = express();
 
 //connect to database

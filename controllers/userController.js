@@ -1,12 +1,14 @@
 //import the user model
 const User = require("../models/user");
 
-//tokens
-const bcrypt = require('bcrypt');
+// Import the jsonwebtoken for creating JWTs
 const jwt = require('jsonwebtoken');
 
+// Import the bcrypt for hashing passwords
+const bcrypt = require('bcrypt');
+
 exports.register = async (req, res) => {
-    //get user input from request body
+    //Get user input from request body
     const { userName, email, password } = req.body;
 
     try {
@@ -18,15 +20,15 @@ exports.register = async (req, res) => {
                 message: "User aleady exists"
             })
         }
+
         //Hass the password before save
         const hashedPassword = await bcrypt.hash(password, 10);
 
         //if user not exist create the user
-        user = new User({ userName, email, password: hashedPassword });
-        await user.save();
+        const newUser = new User({ userName, email, password: hashedPassword });
+        await newUser.save();
 
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        res.status(201).json({ token: token, message: "User registered successfully" });
+        res.status(201).json({ message: "User registered successfully" });
 
     } catch (error) {
         res.status(500).json({
@@ -36,7 +38,7 @@ exports.register = async (req, res) => {
     }
 }
 
-//Login User
+// Controller function for user login
 exports.login = async (req, res) => {
     const { email, password } = req.body;
 
@@ -47,8 +49,7 @@ exports.login = async (req, res) => {
                 message: "Invalide credentails"
             })
         }
-       
-        
+
         //Compare the password with hashed password
         const isMatch = await bcrypt.compare(password, user.password)
 
@@ -57,35 +58,38 @@ exports.login = async (req, res) => {
         }
 
         //Gerenate a JWT Token
-        const token = jwt.sign(
-            { userId: user._id },   // Payload
-            process.env.JWT_SECRET,  // Secret key from .env
-            { expiresIn: "1h" }    // Token expiry time
-        );
+        const token = jwt.sign({userId: user._id, email: user.email}, process.env.SECRET_KEY, {expiresIn: "1hr"} )
 
+        //return the token to the user
         res.json({ token });
 
     } catch (error) {
         res.status(500).json({
-            error: "Server Error"
+            error: 'Login failed',
+            message: error.message
         })
     }
 }
 
-//Get user Info
+//Get user profile
 exports.getUserProfile = async (req, res) => {
 
     try {
         // Fetch the user's information using the userId from the JWT
-        const user = await User.findById(req.user).select("-password");
-
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
+        const user = req.user;
+        if(!req.user) {
+            return res.status(404).json({
+                message: "User not found",
+            })
         }
 
-        // Return user profile data
-        res.json(user);
-
+         // Return user profile data
+        res.status(200).json({
+            id: user._id,
+            username: user.username,
+            email: user.email,
+        })
+       
     } catch (error) {
         res.status(500).json({
             error: "Server Error"
