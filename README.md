@@ -4,12 +4,18 @@ This Node.js application provides user authentication and authorization using Be
 
 **Features**
 -User registration with hashed passwords.
+
 -User login with JWT token generation.
+
 -Authentication middleware to protect routes.
+
 -Authorization to get user profile based on the JWT token.
+
 -MongoDB for data persistence.
 -Clean MVC structure.
+
 -Error handling and input validation.
+
 -API documentation with Postman.
 
 **Installation**
