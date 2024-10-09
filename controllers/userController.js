@@ -57,8 +57,11 @@ exports.login = async (req, res) => {
             return res.status(400).json({ error: "Invalid email or password" });
         }
 
+        console.log("process.env_________", process.env.JWT_SECRET);
+        
+
         //Gerenate a JWT Token
-        const token = jwt.sign({userId: user._id, email: user.email}, process.env.SECRET_KEY, {expiresIn: "1hr"} )
+        const token = jwt.sign({userId: user._id, email: user.email}, process.env.JWT_SECRET, {expiresIn: "1hr"} )
 
         //return the token to the user
         res.json({ token });
@@ -73,6 +76,7 @@ exports.login = async (req, res) => {
 
 //Get user profile
 exports.getUserProfile = async (req, res) => {
+console.log("req.user;___________", req.user);
 
     try {
         // Fetch the user's information using the userId from the JWT

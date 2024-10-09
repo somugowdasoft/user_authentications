@@ -19,18 +19,6 @@ const userSchema = new mongoose.Schema({
     }
 })
 
-//Hass password before saving user document
-userSchema.pre('save', async function (next) {
-    //If password has not been modified, skip hasing
-    if (!this.isModified('password')) next();
-
-    //Generate a salt (random data for hasing)
-    const salt = await bcrypt.genSalt(10);
-
-    //Hash the password using the salt
-    this.password = await bcrypt.hash(this.password, salt);
-})
-
 //export the user schema
 const User = mongoose.model('User', userSchema);
 module.exports = User;

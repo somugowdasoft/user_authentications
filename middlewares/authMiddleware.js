@@ -10,7 +10,7 @@ exports.verifyToken = async (req, res, next) => {
     const authHeader = req.headers.authorization;
 
     //if no token provides, resond with 403 forbidden
-    if (!authHeader) {
+    if(!authHeader) {
         return res.status(403).json({
             message: "Token is required"
         })
@@ -21,12 +21,13 @@ exports.verifyToken = async (req, res, next) => {
 
     // Verify the token
     try {
-        const decode = jwt.verify(token, process.env.SECRET_KEY)
+        const decode = jwt.verify(token, process.env.JWT_SECRET)
+
         // Find the user by ID in the decoded token
         const user = await User.findById(decode.userId)
         if (!user) {
-            return res.status(404).json({
-                message: "User not found"
+            return res.status(404).json({ 
+                message: "User not found" 
             });
         }
 
@@ -35,6 +36,10 @@ exports.verifyToken = async (req, res, next) => {
         next();
 
     } catch (error) {
-        res.status(401).json({ message: 'Token is not valid' });
-    }
+        if (!token) {
+            return res.status(401).json({   
+                message: "Invalid token" 
+            });
+        }
+    }
 }
