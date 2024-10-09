@@ -1,4 +1,5 @@
 **User Authentication and Authorization API**
+
 This Node.js application provides user authentication and authorization using Bearer tokens (JWT). It follows the MVC pattern with MongoDB as the database, using Mongoose for ORM, Express.js for routing, and JWT for token generation and verification. Each request is documented and tested using Postman.
 
 **Features**
